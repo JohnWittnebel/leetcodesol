@@ -5,16 +5,14 @@ class Solution(object):
         :type t: str
         :rtype: str
         """
-        # Idea: We can hash each element of t (with count), and then check each start/end index of s
-        #       this will take O(m^2) time. Maybe there is some trick to get O(m), but I cant think
-        #       of one atm
+        # Idea: We can hash each element of t (with count), and then move a start/end pointer from
+        #.      left to right of the array until we find the best soln
         myTable = {}
         for ele in t:
             if ele in myTable:
-                myTable[ele][0] += 1
-                myTable[ele][1] += 1
+                myTable[ele] += 1
             else:
-                myTable[ele] = [1,1]
+                myTable[ele] = 1
         totalElements = len(t)
         totalElementsStart = len(t)
         
@@ -23,24 +21,39 @@ class Solution(object):
         bestStart = 0
         bestEnd = 0
         minSoFar = len(s) + 1
-        while start < len(s):
-            while end < len(s) and totalElements > 0:
-                if s[end] in myTable and myTable[s[end]][0] > 0:
-                    totalElements -= 1
-                    myTable[s[end]][0] -= 1
-                end += 1
-            if totalElements == 0:
+        while start < len(s) and end < len(s):
+            if (totalElements == 0):
                 if end - start < minSoFar:
-                    bestEnd = end
                     bestStart = start
+                    bestEnd = end
                     minSoFar = end - start
-            start += 1
-            end = start
-            totalElements = totalElementsStart
-            for ele in myTable:
-                myTable[ele][0] = myTable[ele][1]
+                if s[start] in myTable:
+                    myTable[s[start]] += 1
+                    if (myTable[s[start]] > 0):
+                        totalElements += 1
+                start += 1
+            elif s[end] in myTable:
+                myTable[s[end]] -= 1
+                if myTable[s[end]] >= 0:
+                    totalElements -= 1
+                end += 1
+            else:
+                end += 1
             
-        if minSoFar <= len(s):
+        while (totalElements == 0):
+            if end - start < minSoFar:
+                bestStart = start
+                bestEnd = end
+                minSoFar = end - start
+            if s[start] in myTable:
+                myTable[s[start]] += 1
+                if (myTable[s[start]] > 0):
+                    totalElements += 1
+            start += 1
+            
+        if (totalElements == 0 and minSoFar > end - start):
+            return s[start:end]
+        elif minSoFar <= len(s):
             return s[bestStart:bestEnd]
         else:
             return ""
