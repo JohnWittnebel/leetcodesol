@@ -1,10 +1,5 @@
 class Solution(object):
     def minWindow(self, s, t):
-        """
-        :type s: str
-        :type t: str
-        :rtype: str
-        """
         # Idea: We can hash each element of t (with count), and then move a start/end pointer from
         #.      left to right of the array until we find the best soln
         myTable = {}
